@@ -16,7 +16,7 @@ export function generatePrompts(config: Config): string[] {
     `What are the best ${category} in ${year}?`,
     `What are the top ${category} I should consider?`,
     `I'm evaluating ${category}. Which ones do you recommend and why?`,
-    `What's the most popular ${category} right now?`,
+    `What is the most popular option among ${category} right now?`,
     `Which ${category} are best for a small team getting started?`,
     `What are some lesser-known but powerful ${category}?`,
     `Compare the leading ${category} and their tradeoffs.`,

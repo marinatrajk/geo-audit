@@ -9,20 +9,26 @@ SEO got you to the top of Google. GEO (Generative Engine Optimization) is the ne
 ## Quick start
 
 ```bash
-npm install
+bun install
 cp .env.example .env   # add at least OPENAI_API_KEY
-npm run build
 
-geo-audit \
+bun src/cli.ts \
   --brand "Vellum" \
-  --category "AI assistant platforms" \
-  --competitors "Hermes,OpenClaw,MemGPT"
+  --category "AI agent frameworks for developers" \
+  --competitors "Hermes,OpenClaw,MemGPT" \
+  --md report.md
 ```
 
-Or run without building:
+Tip: the category string matters a lot. "AI assistant platforms" pulls
+consumer voice assistants (Siri, Alexa); "AI agent frameworks for developers"
+pulls the dev-tool category. Audit the phrasing your buyers actually use.
+
+Using Node instead of Bun:
 
 ```bash
-npm run dev -- --brand "Vellum" --category "AI assistant platforms"
+npm install
+npm run build
+node dist/cli.js --brand "Vellum" --category "AI agent frameworks for developers"
 ```
 
 ## What you get
