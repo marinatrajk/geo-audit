@@ -2,9 +2,17 @@ import type { Provider } from "../types.js";
 
 const ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
+/**
+ * OpenAI provider in GROUNDED mode.
+ *
+ * Uses gpt-4o-search-preview, which performs live web search before
+ * answering. This mirrors what a real person sees in ChatGPT with search
+ * on, rather than the frozen training-data answer a plain gpt-4o call
+ * returns. GEO is about what AI says *now*, so grounding is the point.
+ */
 export const openai: Provider = {
   name: "openai",
-  defaultModel: "gpt-4o",
+  defaultModel: "gpt-4o-search-preview",
   available() {
     return Boolean(process.env.OPENAI_API_KEY);
   },
@@ -18,7 +26,8 @@ export const openai: Provider = {
       body: JSON.stringify({
         model,
         messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
+        // search-preview models do their own retrieval; temperature is unsupported
+        web_search_options: {},
       }),
     });
     if (!res.ok) {
@@ -32,10 +41,10 @@ export const openai: Provider = {
 };
 
 /**
- * The structured parser runs through OpenAI too. It reads a raw answer and
- * returns JSON describing whether the brand appeared, where, and who else
- * got named. LLM-as-parser beats regex: it handles "Vellum" vs "vellum.ai"
- * vs "Vellum's assistant" without brittle string matching.
+ * Structured parser. Runs through a cheap non-search model (gpt-4o-mini)
+ * in JSON mode. It reads a raw answer and returns whether the brand appeared,
+ * where, and who else got named. LLM-as-parser beats regex: it handles
+ * "Vellum" vs "vellum.ai" vs "Vellum AI" without brittle string matching.
  */
 export async function parseWithOpenAI(
   rawResponse: string,

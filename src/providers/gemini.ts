@@ -2,6 +2,13 @@ import type { Provider } from "../types.js";
 
 const base = "https://generativelanguage.googleapis.com/v1beta/models";
 
+/**
+ * Gemini provider in GROUNDED mode.
+ *
+ * Enables the google_search tool so Gemini retrieves live results before
+ * answering, the same grounding the Gemini app uses. This is what makes the
+ * tool reflect what a real person sees in chat, not stale training data.
+ */
 export const gemini: Provider = {
   name: "gemini",
   defaultModel: "gemini-2.0-flash",
@@ -15,6 +22,7 @@ export const gemini: Provider = {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
+        tools: [{ google_search: {} }],
       }),
     });
     if (!res.ok) {
