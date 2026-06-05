@@ -92,14 +92,81 @@ node dist/cli.js --brand "Vellum" --category "AI agent frameworks for developers
 
 ## Providers
 
-| Provider | Env var | Notes |
-| --- | --- | --- |
-| OpenAI | `OPENAI_API_KEY` | Required (also runs the parser) |
-| Anthropic | `ANTHROPIC_API_KEY` | Optional |
-| Perplexity | `PERPLEXITY_API_KEY` | Optional, closest to live AI search |
-| Gemini | `GEMINI_API_KEY` | Optional |
+### Built in
 
-Missing keys are skipped, so you can run with just one provider.
+Four providers ship in the box. Each queries the model in its grounded /
+web-search mode, so results reflect what a real person sees in the chat app,
+not stale training data.
+
+| Provider | Env var | Model used | Notes |
+| --- | --- | --- | --- |
+| OpenAI | `OPENAI_API_KEY` | `gpt-4o-search-preview` | Required (also runs the answer parser) |
+| Anthropic | `ANTHROPIC_API_KEY` | `claude-3-5-sonnet-latest` | Optional |
+| Perplexity | `PERPLEXITY_API_KEY` | `sonar` | Optional, closest to live AI search |
+| Gemini | `GEMINI_API_KEY` | `gemini-2.0-flash` (+ Google Search) | Optional |
+
+`OPENAI_API_KEY` is always required because the answer parser runs through
+`gpt-4o-mini`, regardless of which models you query. Every other key is
+optional. Missing keys are skipped, so you can run with just one provider.
+
+Pick a subset with `--providers`:
+
+```bash
+# only the engines you care about
+bun src/cli.ts --brand "Vellum" --prompts-file prompts.txt --providers openai,perplexity
+```
+
+### Adding your own
+
+Any OpenAI-compatible API (Grok, DeepSeek, Groq, Together, OpenRouter, a local
+model, etc.) is about 30 lines. Three steps:
+
+**1. Create `src/providers/<name>.ts`** implementing the `Provider` interface:
+
+```typescript
+import type { Provider } from "../types.js";
+
+const ENDPOINT = "https://api.x.ai/v1/chat/completions";
+
+export const grok: Provider = {
+  name: "grok",
+  defaultModel: "grok-2-latest",
+  available() {
+    return Boolean(process.env.XAI_API_KEY);
+  },
+  async ask(prompt: string, model = grok.defaultModel): Promise<string> {
+    const res = await fetch(ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.XAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+    if (!res.ok) throw new Error(`grok ${res.status}: ${await res.text()}`);
+    const data = (await res.json()) as {
+      choices: { message: { content: string } }[];
+    };
+    return data.choices[0]?.message?.content ?? "";
+  },
+};
+```
+
+**2. Register it** in `src/providers/index.ts`:
+
+```typescript
+import { grok } from "./grok.js";
+export const allProviders: Provider[] = [openai, anthropic, perplexity, gemini, grok];
+```
+
+**3. Add the key** to your `.env` (and `.env.example` so others know it exists).
+
+The whole contract is four members: `name`, `defaultModel`, `available()`,
+and `ask()`. If the API speaks the OpenAI chat-completions format, it's a
+copy of `src/providers/openai.ts` with a different URL and env var.
 
 ## CI / cron
 
