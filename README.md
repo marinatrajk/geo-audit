@@ -103,7 +103,7 @@ not stale training data.
 | OpenAI | `OPENAI_API_KEY` | `gpt-4o-search-preview` | Required (also runs the answer parser) |
 | Anthropic | `ANTHROPIC_API_KEY` | `claude-3-5-sonnet-latest` | Optional |
 | Perplexity | `PERPLEXITY_API_KEY` | `sonar` | Optional, closest to live AI search |
-| Gemini | `GEMINI_API_KEY` | `gemini-2.0-flash` (+ Google Search) | Optional |
+| Gemini | `GEMINI_API_KEY` | `gemini-3.5-flash` (+ Google Search) | Optional |
 
 `OPENAI_API_KEY` is always required because the answer parser runs through
 `gpt-4o-mini`, regardless of which models you query. Every other key is
