@@ -8,6 +8,16 @@ import type { Config } from "../types.js";
  * comparison framings so the score reflects real query diversity rather
  * than a single lucky prompt.
  */
+export function resolvePrompts(config: Config): string[] {
+  // Explicit prompts win: these are the real phrases people type, used
+  // verbatim and in full. No synthesis, no truncation, because real queries
+  // beat tidy category strings and you meant every one you passed.
+  if (config.explicitPrompts.length > 0) {
+    return config.explicitPrompts.slice(0, 50);
+  }
+  return generatePrompts(config);
+}
+
 export function generatePrompts(config: Config): string[] {
   const { category, brand, competitors } = config;
   const year = new Date().getFullYear();

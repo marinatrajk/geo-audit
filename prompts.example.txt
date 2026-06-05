@@ -1,0 +1,10 @@
+# Real things people type into ChatGPT, Claude, Gemini, Perplexity.
+# One prompt per line. Blank lines and lines starting with # are ignored.
+# These beat synthesized category queries: audit what buyers actually ask.
+
+can you recommend any personal AI assistants similar to OpenClaw or Hermes
+what's a good AI tool that can read my files and help me work on my mac
+I want an AI assistant that runs on my own computer, what are my options
+is there an open source alternative to ChatGPT that has memory
+what do people use to automate their daily tasks with AI in 2026
+which AI assistant is best for privacy and keeping my data local

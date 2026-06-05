@@ -11,17 +11,32 @@ SEO got you to the top of Google. GEO (Generative Engine Optimization) is the ne
 ```bash
 bun install
 cp .env.example .env   # add at least OPENAI_API_KEY
+```
 
+People don't type categories into a chat, they type questions. Audit the
+real phrases your buyers use:
+
+```bash
 bun src/cli.ts \
   --brand "Vellum" \
-  --category "AI agent frameworks for developers" \
-  --competitors "Hermes,OpenClaw,MemGPT" \
+  --prompt "can you recommend any personal AI assistants similar to OpenClaw or Hermes" \
+  --prompt "what's a good AI tool that can read my files and help me work on my mac" \
+  --competitors "OpenClaw,Hermes,Sai,MemGPT" \
   --md report.md
 ```
 
-Tip: the category string matters a lot. "AI assistant platforms" pulls
-consumer voice assistants (Siri, Alexa); "AI agent frameworks for developers"
-pulls the dev-tool category. Audit the phrasing your buyers actually use.
+Or keep your prompts in a file (one per line, `#` for comments) and reuse it:
+
+```bash
+bun src/cli.ts --brand "Vellum" --prompts-file prompts.example.txt --md report.md
+```
+
+Don't have a prompt list yet? `--category` synthesizes a spread of buyer
+queries for you, but real prompts always beat synthesized ones:
+
+```bash
+bun src/cli.ts --brand "Vellum" --category "open source AI assistant" --md report.md
+```
 
 Using Node instead of Bun:
 
@@ -65,9 +80,11 @@ node dist/cli.js --brand "Vellum" --category "AI agent frameworks for developers
 | Flag | Description |
 | --- | --- |
 | `-b, --brand` | Your brand name (required) |
-| `-c, --category` | The category buyers search (required) |
+| `-q, --prompt` | A real phrase someone types into a chat (repeatable) |
+| `-f, --prompts-file` | File of real prompts, one per line (`#` comments ok) |
+| `-c, --category` | Synthesize buyer queries from a category (used only if no real prompts given) |
 | `-k, --competitors` | Comma-separated competitor names to track |
-| `-p, --prompts` | Number of buyer queries to run, 1-20 (default 6) |
+| `-p, --prompts` | Max synthesized queries to run, 1-50 (default 6) |
 | `--providers` | Restrict to a subset, e.g. `openai,perplexity` |
 | `--parser-model` | Model used to parse answers (default `gpt-4o-mini`) |
 | `--json <path>` | Write machine-readable JSON report |

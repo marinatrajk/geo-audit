@@ -39,14 +39,24 @@ export interface AuditReport {
   topCompetitors: { name: string; mentions: number }[];
 }
 
-export const ConfigSchema = z.object({
-  brand: z.string().min(1),
-  category: z.string().min(1),
-  competitors: z.array(z.string()).default([]),
-  prompts: z.number().int().min(1).max(20).default(6),
-  providers: z.array(z.string()).optional(), // restrict to a subset; defaults to all with keys present
-  parserModel: z.string().default("gpt-4o-mini"),
-});
+export const ConfigSchema = z
+  .object({
+    brand: z.string().min(1),
+    // category is optional: it's only used to synthesize prompts when you
+    // don't supply your own. Real audits should pass real prompts.
+    category: z.string().default(""),
+    // explicit prompts: the actual phrases people type into a chat. When
+    // present, these are used verbatim and category synthesis is skipped.
+    explicitPrompts: z.array(z.string()).default([]),
+    competitors: z.array(z.string()).default([]),
+    prompts: z.number().int().min(1).max(50).default(6),
+    providers: z.array(z.string()).optional(), // restrict to a subset; defaults to all with keys present
+    parserModel: z.string().default("gpt-4o-mini"),
+  })
+  .refine((c) => c.category.length > 0 || c.explicitPrompts.length > 0, {
+    message:
+      "Provide either --category (to synthesize prompts) or at least one --prompt / --prompts-file.",
+  });
 export type Config = z.infer<typeof ConfigSchema>;
 
 /** Interface every provider adapter implements. */

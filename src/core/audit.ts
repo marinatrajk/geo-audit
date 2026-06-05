@@ -6,7 +6,7 @@ import type {
   QueryResult,
 } from "../types.js";
 import { MentionSchema } from "../types.js";
-import { generatePrompts } from "./prompts.js";
+import { resolvePrompts } from "./prompts.js";
 import { parseWithOpenAI } from "../providers/openai.js";
 
 const ABSENT: Mention = {
@@ -38,7 +38,7 @@ export async function runAudit(
   providers: Provider[],
   onProgress?: (done: number, total: number) => void,
 ): Promise<AuditReport> {
-  const prompts = generatePrompts(config);
+  const prompts = resolvePrompts(config);
   const tasks: { prompt: string; provider: Provider }[] = [];
   for (const provider of providers) {
     for (const prompt of prompts) {
