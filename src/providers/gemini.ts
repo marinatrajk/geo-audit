@@ -11,7 +11,7 @@ const base = "https://generativelanguage.googleapis.com/v1beta/models";
  */
 export const gemini: Provider = {
   name: "gemini",
-  defaultModel: "gemini-2.0-flash",
+  defaultModel: "gemini-flash-latest",
   available() {
     return Boolean(process.env.GEMINI_API_KEY);
   },
