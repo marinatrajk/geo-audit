@@ -14,7 +14,11 @@ export function renderTerminal(report: AuditReport): string {
 
   lines.push("");
   lines.push(chalk.bold(`  GEO Audit: ${report.brand}`));
-  lines.push(chalk.dim(`  Category: ${report.category}`));
+  if (report.category) {
+    lines.push(chalk.dim(`  Category: ${report.category}`));
+  } else {
+    lines.push(chalk.dim(`  ${report.results.length} real prompts`));
+  }
   lines.push("");
   lines.push(
     `  Visibility score   ${color(chalk.bold(`${report.score.visibility}/100`))}`,
@@ -56,7 +60,9 @@ export function renderMarkdown(report: AuditReport): string {
   const lines: string[] = [];
   lines.push(`# GEO Audit: ${report.brand}`);
   lines.push("");
-  lines.push(`**Category:** ${report.category}  `);
+  if (report.category) {
+    lines.push(`**Category:** ${report.category}  `);
+  }
   lines.push(`**Generated:** ${report.generatedAt}  `);
   if (report.competitors.length > 0) {
     lines.push(`**Tracked competitors:** ${report.competitors.join(", ")}  `);
